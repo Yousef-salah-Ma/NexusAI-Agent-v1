@@ -9,6 +9,7 @@ An AI-powered personal assistant built with **Google Gemini, LangGraph, LangChai
 ## Table of Contents
 
 - [Overview](#overview)
+- [Project Demo](#project-demo)
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
 - [Tech Stack](#tech-stack)
@@ -42,6 +43,14 @@ The project explores practical applications of:
 - REST API development
 - Authentication and password hashing
 - Multimodal input and document processing
+
+## Project Demo
+
+Watch the NexusAI Agent v1.0 demo on YouTube to see the project in action.
+
+[![NexusAI Agent v1.0 — YouTube Demo](https://img.youtube.com/vi/bdR5vadUPx8/maxresdefault.jpg)](https://www.youtube.com/watch?v=bdR5vadUPx8&t=61s)
+
+▶️ **[Watch the full demo on YouTube](https://www.youtube.com/watch?v=bdR5vadUPx8&t=61s)**
 
 ## Key Features
 
@@ -143,7 +152,7 @@ The project uses:
 
 The embedding model converts text into numerical vectors that represent semantic information. These vectors enable similarity-based retrieval.
 
-The configured model runs on CUDA and uses normalized embeddings.
+The configured model runs on CUDA and uses normalized embeddings. CPU configuration may be used if GPU execution is unavailable.
 
 ```python
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -155,7 +164,7 @@ embedding_model = HuggingFaceEmbeddings(
 )
 ```
 
-**Note:** This configuration expects a working CUDA-compatible environment. CPU configuration may be used if GPU execution is unavailable.
+**Note:** This configuration expects a working CUDA-compatible environment. Change the device to `"cpu"` if GPU execution is unavailable.
 
 ### 2. Vector Store with PGVector
 
@@ -284,6 +293,8 @@ Each conversation is associated with a configurable `thread_id`. The application
 
 The checkpointer preserves graph state; it is not a separate semantic long-term memory or a user-profile memory system.
 
+**Implementation note:** The checkpointer's context manager must be managed throughout the application's lifecycle. In a production implementation, initialize and close resources through FastAPI lifespan handling.
+
 ## Available Tools
 
 The agent has access to six tools.
@@ -394,7 +405,7 @@ cd NexusAI-Agent-v1
 python -m venv .venv
 ```
 
-Activate it on Windows:
+Activate it on Windows PowerShell:
 
 ```powershell
 .venv\Scripts\Activate.ps1
@@ -410,13 +421,13 @@ pip install -r requirements.txt
 
 ### 4. Configure PostgreSQL
 
-Create the application database and enable the PGVector extension:
+Create the application database:
 
 ```sql
 CREATE DATABASE mydatabase;
 ```
 
-Connect to the database, then run:
+Connect to the database, then enable the PGVector extension:
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS vector;
@@ -424,13 +435,11 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 Ensure the database connection used by the application has permission to create and access the required tables and vector-store structures.
 
-Run the user-table initialization script if your repository includes it.
-
-### 5. Configure Environment Variables
-
-Create a local `.env` file based on the example below. Use your own credentials and connection strings.
+Run the user-table initialization script if your repository includes one.
 
 ## Environment Variables
+
+Create a local `.env` file and configure the required values.
 
 ```dotenv
 # Authentication
@@ -461,13 +470,14 @@ CONNECTION_store=postgresql://USER:PASSWORD@HOST:5432/DATABASE
 CONNECTION=postgresql+psycopg://USER:PASSWORD@HOST:5432/DATABASE
 ```
 
-**Configuration note:** The supplied code currently reads `SECRET_KEY` as the PostgreSQL password in `auth.py` and in the user-table initialization function. Change those database connection calls to use a dedicated `DB_PASSWORD` variable, as shown above, before relying on this example configuration.
+**Configuration notes:**
 
-Use URL-safe encoding for special characters in database connection strings where required by the URL format.
-
-The `CONNECTION_store` and `CONNECTION` variables may point to the same database, but their connection formats and purposes differ.
-
-Never commit `.env` or real API keys, tokens, passwords, or email app passwords.
+- The supplied code currently reads `SECRET_KEY` as the PostgreSQL password in `auth.py` and in the user-table initialization function. Change those database connection calls to use the dedicated `DB_PASSWORD` variable before relying on this example configuration.
+- The `CONNECTION_store` and `CONNECTION` variables may point to the same database, but their connection formats and purposes differ.
+- Use URL-safe encoding for special characters in database connection strings where required by the URL format.
+- Never commit `.env` or real API keys, tokens, passwords, or email app passwords.
+- Add `.env` to `.gitignore`.
+- The variable names in the `.env` file must match those expected by your Python code.
 
 ## Running the Application
 
@@ -479,9 +489,7 @@ uvicorn main:app --reload
 
 Open the interactive API documentation at:
 
-```text
 http://127.0.0.1:8000/docs
-```
 
 The configured CORS origin in the current code is `http://127.0.0.1:5500`. Update it if your frontend runs on a different origin.
 
