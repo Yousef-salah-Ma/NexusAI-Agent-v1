@@ -442,32 +442,25 @@ Run the user-table initialization script if your repository includes one.
 Create a local `.env` file and configure the required values.
 
 ```dotenv
-# Authentication
-SECRET_KEY=replace_with_a_strong_random_secret
+# PostgreSQL - Vector Store / RAG
+CONNECTION=postgresql+psycopg://postgres:YOUR_DB_PASSWORD@localhost:5432/mydb
+
+# PostgreSQL - Users and Checkpoint Storage
+CONNECTION_store=postgresql://postgres:YOUR_DB_PASSWORD@localhost:5432/store_users
+
+# Google Gemini API
+google_api_key=YOUR_GOOGLE_API_KEY
+
+# Tavily Web Search API
+tavily_api_key=YOUR_TAVILY_API_KEY
+
+# JWT Authentication
+SECRET_KEY=REPLACE_WITH_A_LONG_RANDOM_SECRET
 ALGORITHM=HS256
 
-# PostgreSQL
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=mydatabase
-DB_USER=postgres
-DB_PASSWORD=replace_with_database_password
-
-# Gemini
-google_api_key=your_gemini_api_key
-
-# Tavily
-tavily_api_key=your_tavily_api_key
-
-# Gmail
+# Email Configuration
 FROM_EMAIL=your_email@gmail.com
-PASSWORD_EMAIL=your_gmail_app_password
-
-# LangGraph checkpoint database connection
-CONNECTION_store=postgresql://USER:PASSWORD@HOST:5432/DATABASE
-
-# PGVector connection
-CONNECTION=postgresql+psycopg://USER:PASSWORD@HOST:5432/DATABASE
+PASSWORD_EMAIL=YOUR_EMAIL_APP_PASSWORD
 ```
 
 **Configuration notes:**
